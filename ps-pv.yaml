@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ps-pv
+  labels:
+    type: local
+spec:
+  #This tells something that , if PVC is unbound should PV stay? i.e. Delete option will delete vlume on the storage backend after unbound
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ps-fast
+  capacity:
+    storage: 1Gi
+#can be claimed once in RW mode by one pod
+#Read-write-many - same, but I can use it lots of times
+#Read-only -many I cannot write to it but I can use it in as many pods as I want
+#Not all ext storages supports all methods but NTFS yes
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/Users/ab011th/test/volume"

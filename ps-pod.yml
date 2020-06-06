@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: first-pod
+spec:
+  volumes:
+    - name: fast1g
+      persistentVolumeClaim:
+        claimName: ps-pvc
+  containers:
+  - image: ubuntu:latest
+    name: ctr1
+    command:
+    - /bin/bash
+    - "-c"
+    - "sleep 60m"
+    volumeMounts:
+#bounds pvc to local folder
+    - mountPath: /data
+      name: fast1g

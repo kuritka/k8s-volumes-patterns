@@ -1,0 +1,20 @@
+#Storage class abstracts and enable dynamic provisioning
+kind: StorageClass
+#This is nothing againts. It just tells it is a bit newer type of object than monolithyc core api
+apiVersion: storage.k8s.io/v1
+metadata:
+  #would be ps-local-fast
+  name: ps-local-fast
+  annotations:
+    #there is already default SC, ve override it
+    storageclass.kubernetes.io/is-default-class: "true"
+#local disk drive provisioner https://kubernetes.io/blog/2019/04/04/kubernetes-1.14-local-persistent-volumes-ga/
+#https://kubernetes.io/docs/concepts/storage/storage-classes/#local - Local volumes do not currently support dynamic provisioning, however a StorageClass should still be created to delay volume binding until Pod scheduling. This is specified by the WaitForFirstConsumer volume binding mode
+provisioner: kubernetes.io/no-provisioner
+# for google cloud provisioner: kubernetes.io/gce-pd
+#  hold off actual creation of backend volume until POD is started that uses it
+# creates PV after the pod gets sceduled
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  type: pd-ssd
+  replication-type: none
