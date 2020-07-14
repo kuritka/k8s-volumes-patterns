@@ -81,12 +81,14 @@ spec:
   securityContext:
     fsGroup: 0
     runAsUser: 0
+## three init containers
   initContainers:
-  - name: init-ps-pv.yaml  # Looks for PV
+## check loops until pv exists
+  - name: init-ps-pv  # Looks for PV
     image: nigelpoulton/k8s-api-proxy:1.0
     command: ["sh", "-c"]
     args: ["until kubectl get pvc pvc-finale-1; do echo waiting for PVC; sleep 1; done; echo PVC found!"]
-  - name: init-sync   # Does an initial sync from GH
+  - name: init-sync   # Does an initial sync from GH to shared volume PVC (pvc-finale-1) declared earlier
     image: k8s.gcr.io/git-sync:v3.1.5
     volumeMounts:
     - name: pvc-finale-1
@@ -104,7 +106,8 @@ spec:
     - name: GIT_SYNC_DEST
       value: "html"
     - name: GIT_SYNC_ONE_TIME
-      value: "true"  
+      value: "true"
+## waiting until svc is created and exists by DNS lookup mechanism
   - name: init-svc  # Looks for Service called finale-svc
     image: busybox
     command: ['sh', '-c', 'until nslookup finale-svc; do echo waiting for finale-svc service; sleep 1; done; echo Service found!']  
